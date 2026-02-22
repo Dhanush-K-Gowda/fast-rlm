@@ -4,13 +4,18 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fast-rlm"
-version = "0.1.1"
+version = "0.1.2"
 description = "Recursive Language Model"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "pyyaml>=6.0",
 ]
+
+[project.urls]
+Documentation = "https://avbiswas.github.io/fast-rlm/"
+Repository = "https://github.com/avbiswas/fast-rlm"
+"Original Paper" = "https://arxiv.org/abs/2512.24601"
 
 [project.optional-dependencies]
 benchmarks = [

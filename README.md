@@ -2,7 +2,7 @@
 
 A minimal implementation of Recursive Language Models (RLMs) using Deno and Pyodide.
 
-> **Watch the full video for free**
+> **Watch the full video on YouTube**
 > **[RLM Tutorial](https://youtu.be/nxaVvvrezbY)**
 
 ## What are RLMs

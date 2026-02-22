@@ -46,7 +46,10 @@ The root agent orchestrates the task by writing Python code. When it needs help 
   <iframe src="https://www.youtube.com/embed/nxaVvvrezbY" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" frameborder="0" allowfullscreen></iframe>
 </div>
 
-[:material-file-document: Read the paper on arXiv](https://arxiv.org/abs/2512.24601)
+[:material-file-document: Read the original RLM paper on arXiv](https://arxiv.org/abs/2512.24601)
+
+!!! note
+    fast-rlm is an independent implementation of the ideas from the RLM paper. This project is not affiliated with the original authors.
 
 ## Support
 
