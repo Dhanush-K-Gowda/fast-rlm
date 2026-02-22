@@ -1,0 +1,7 @@
+*egg-info*
+*DS_Store
+*env
+*envrc
+*pyc
+*__pycache__*
+logs/*

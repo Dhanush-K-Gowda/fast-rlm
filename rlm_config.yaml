@@ -1,0 +1,6 @@
+max_calls_per_subagent: 20
+max_depth: 3
+truncate_len: 2000
+primary_agent: "z-ai/glm-5"
+sub_agent: "minimax/minimax-m2.5"
+max_money_spent: 1.0
