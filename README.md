@@ -26,7 +26,9 @@ pip install fast-rlm
 ### Requirements
 
 - Python 3.10+
-- [Deno](https://deno.land/) 2+ — `curl -fsSL https://deno.land/install.sh | sh`
+- [Deno](https://deno.land/) 2+
+  - macOS/Linux: `curl -fsSL https://deno.land/install.sh | sh`
+  - Windows (npm): `npm install -g deno`
 - (Optional) [Bun](https://bun.sh/) — only needed for the TUI log viewer
 
 ### Environment Variables
@@ -106,6 +108,14 @@ fast-rlm-log logs/run_xxx.jsonl --tui
 ## Development (from source)
 
 ### 1. Install Deno
+
+Windows (npm):
+
+```powershell
+npm install -g deno
+```
+
+macOS / Linux:
 
 ```bash
 curl -fsSL https://deno.land/install.sh | sh

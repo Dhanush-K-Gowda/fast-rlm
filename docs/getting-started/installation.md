@@ -29,6 +29,12 @@ fast-rlm requires [Deno](https://deno.land/) 2+ as its runtime engine.
     irm https://deno.land/install.ps1 | iex
     ```
 
+    Or install via npm:
+
+    ```powershell
+    npm install -g deno
+    ```
+
 Verify the installation:
 
 ```bash

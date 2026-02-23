@@ -6,6 +6,12 @@
 - [Bun](https://bun.sh/) (for the log viewer)
 - [uv](https://docs.astral.sh/uv/) (for Python/benchmarks)
 
+On Windows, you can install Deno with npm:
+
+```powershell
+npm install -g deno
+```
+
 ## Setup
 
 ```bash

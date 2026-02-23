@@ -91,7 +91,7 @@ def run(
         "--allow-read",
         "--allow-env",
         "--allow-net",
-        "--allow-sys=hostname",
+        "--allow-sys=hostname,osRelease",
         "--allow-write",
         "src/subagents.ts",
         "--output",
