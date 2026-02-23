@@ -50,6 +50,7 @@ nav:
   - Guide:
       - Configuration: guide/configuration.md
       - Log Viewer: guide/log-viewer.md
+      - Best Practices & Troubleshooting: guide/tips.md
   - Development:
       - From Source: development/from-source.md
       - Benchmarks: development/benchmarks.md

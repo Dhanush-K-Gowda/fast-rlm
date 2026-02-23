@@ -114,6 +114,16 @@ All config fields:
 | `truncate_len` | `int` | `2000` | Output chars shown to the LLM per step |
 | `max_money_spent` | `float` | `1.0` | Hard budget cap in USD |
 
+## Best Practices & Troubleshooting
+
+- **Place your task at the top or bottom of the prompt** — the REPL restricts how much context the LLM sees, so don't bury the task in the middle.
+- **Mark structured data with backtick blocks** — wrap JSON, CSV, etc. in fenced code blocks and name the format in the prompt.
+- **Use strong coding models** — agents write and execute Python, so coding benchmarks matter. See [recommended models](https://avbiswas.github.io/fast-rlm/guide/configuration/#model-names).
+- **Inject domain docs when needed** — for obscure domains, add reference material and tell the agent how it's organized (e.g. with `##` headers).
+- **Check logs and start with strict limits** — review what the agent is doing before scaling up. Prompt changes usually help more than bigger budgets.
+
+For the full guide, see the [Best Practices & Troubleshooting](https://avbiswas.github.io/fast-rlm/guide/tips/) docs page.
+
 ## Log Viewer
 
 ![TUI Log Viewer](docs/images/tui.jpeg)
