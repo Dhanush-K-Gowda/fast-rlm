@@ -54,11 +54,41 @@ export RLM_MODEL_API_KEY=sk-or-...
 
 ## 4. (Optional) Install Bun
 
-Only needed if you want the interactive TUI log viewer:
+Only needed if you want the interactive TUI log viewer (`fast-rlm-log <file> --tui`).
+
+=== "macOS / Linux"
+
+    ```bash
+    curl -fsSL https://bun.sh/install | bash
+    ```
+
+    Then add Bun to your `PATH` (the installer will print the exact lines, but typically):
+
+    ```bash
+    export BUN_INSTALL="$HOME/.bun"
+    export PATH="$BUN_INSTALL/bin:$PATH"
+    ```
+
+=== "Windows"
+
+    ```powershell
+    powershell -c "irm bun.sh/install.ps1 | iex"
+    ```
+
+    Or install via npm:
+
+    ```powershell
+    npm install -g bun
+    ```
+
+Verify the installation:
 
 ```bash
-curl -fsSL https://bun.sh/install | bash
+bun --version
 ```
+
+!!! tip
+    Add the `PATH` export to your `.bashrc`, `.zshrc`, or `.envrc` so `bun` is available in every new shell session.
 
 ## Environment Variables
 

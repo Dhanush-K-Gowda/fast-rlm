@@ -65,11 +65,19 @@ def view_log():
 
     if mode == "--tui":
         if shutil.which("bun") is None:
-            print(
-                "Error: bun is required for the TUI log viewer but was not found on PATH.\n"
-                "Install it with: curl -fsSL https://bun.sh/install | bash",
-                file=sys.stderr,
-            )
+            if os.name == "nt":
+                msg = (
+                    "Error: bun is required for the TUI log viewer but was not found on PATH.\n"
+                    "Install it with:\n"
+                    "  powershell -c \"irm bun.sh/install.ps1 | iex\"\n"
+                    "  or: npm install -g bun"
+                )
+            else:
+                msg = (
+                    "Error: bun is required for the TUI log viewer but was not found on PATH.\n"
+                    "Install it with: curl -fsSL https://bun.sh/install | bash"
+                )
+            print(msg, file=sys.stderr)
             sys.exit(1)
 
         engine_dir = _find_engine_dir()
