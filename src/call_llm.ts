@@ -7,7 +7,7 @@ export interface Usage {
     total_tokens: number;
     cached_tokens: number;
     reasoning_tokens: number;
-    cost: number;
+    cost: number | undefined;
 }
 
 interface CodeReturn {
@@ -30,12 +30,13 @@ if (!apiKey) {
 export async function generate_code(
     messages: any[],
     model_name: string,
-    is_leaf_agent: boolean
+    is_leaf_agent: boolean = false
 ): Promise<CodeReturn> {
     const client = new OpenAI({
         apiKey,
         baseURL,
     });
+
     const completion = await client.chat.completions.create({
         // model: "openai/gpt-5.2-codex",
         // model: "z-ai/glm-5",
@@ -45,8 +46,8 @@ export async function generate_code(
             { role: "system", content: is_leaf_agent ? LEAF_AGENT_SYSTEM_PROMPT : SYSTEM_PROMPT },
             ...messages
         ],
-        reasoning: { 'effort': 'low' },
-        temperature: 0.1, // Low temperature for code generation
+        // reasoning: { 'effort': 'low' },
+        // temperature: 0.1, // Low temperature for code generation
     });
 
     const content = completion.choices[0].message.content || "";
@@ -60,7 +61,7 @@ export async function generate_code(
         total_tokens: completion.usage.total_tokens,
         cached_tokens: completion.usage?.prompt_tokens_details?.cached_tokens,
         reasoning_tokens: completion.usage?.completion_tokens_details?.reasoning_tokens,
-        cost: completion.usage.cost,
+        cost: completion.usage.cost ?? undefined,
     }
     if (!code) {
         return {
@@ -83,8 +84,9 @@ if (import.meta.main) {
     // Test with a dummy context
     const query_context = "Just return fibonacci sequence";
     const out = await generate_code([
-        { "role": "user", "content": query_context }
-    ]);
+        { "role": "user", "content": query_context },
+    ], "gpt-5-mini"
+    );
     console.log(out)
 
 }

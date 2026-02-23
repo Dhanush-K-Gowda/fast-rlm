@@ -113,6 +113,8 @@ All config fields:
 | `max_calls_per_subagent` | `int` | `20` | Max LLM calls per subagent |
 | `truncate_len` | `int` | `2000` | Output chars shown to the LLM per step |
 | `max_money_spent` | `float` | `1.0` | Hard budget cap in USD |
+| `max_completion_tokens` | `int` | `50000` | Max total completion tokens across all subagents |
+| `max_prompt_tokens` | `int` | `200000` | Max total prompt tokens across all subagents |
 
 ## Best Practices & Troubleshooting
 
@@ -189,6 +191,8 @@ truncate_len: 2000
 primary_agent: "z-ai/glm-5"
 sub_agent: "minimax/minimax-m2.5"
 max_money_spent: 1.0
+max_completion_tokens: 50000
+max_prompt_tokens: 200000
 ```
 
 ### 5. Running

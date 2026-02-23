@@ -20,6 +20,8 @@ class RLMConfig:
     max_calls_per_subagent: int = 20
     truncate_len: int = 2000
     max_money_spent: float = 1.0
+    max_completion_tokens: int = 50000
+    max_prompt_tokens: int = 200000
 
     @classmethod
     def default(cls) -> "RLMConfig":

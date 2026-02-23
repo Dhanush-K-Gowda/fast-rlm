@@ -17,6 +17,9 @@ After all 6 subagents return, combine the results and build a single dictionary 
 Return the dictionary using FINAL_VAR.
 """
 
-data = fast_rlm.run(prompt, prefix="parallel_r_count")
+config = fast_rlm.RLMConfig()
+config.primary_agent = "minimax/minimax-m2.5"
+config.sub_agent = "minimax/minimax-m2.5"
+data = fast_rlm.run(prompt, config=config, prefix="parallel_r_count")
 print("Result:", data.get("results"))
 print("Usage:", data.get("usage"))

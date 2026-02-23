@@ -13,6 +13,8 @@ interface RlmConfig {
     primary_agent?: string;
     sub_agent?: string;
     max_money_spent?: number;
+    max_completion_tokens?: number;
+    max_prompt_tokens?: number;
 }
 
 function loadConfig(): RlmConfig {
@@ -35,6 +37,8 @@ const TRUNCATE_LEN = _config.truncate_len ?? 5000;
 const PRIMARY_AGENT = _config.primary_agent ?? "z-ai/glm-5";
 const SUB_AGENT = _config.sub_agent ?? "minimax/minimax-m2.5";
 const MAX_MONEY_SPENT = _config.max_money_spent ?? Infinity;
+const MAX_COMPLETION_TOKENS = _config.max_completion_tokens ?? 50000;
+const MAX_PROMPT_TOKENS = _config.max_prompt_tokens ?? 200000;
 
 function truncateText(text: string): string {
     let truncatedOutput = "";
@@ -139,7 +143,7 @@ Output:\n${stdoutBuffer.trim()}
         total_tokens: 0,
         cached_tokens: 0,
         reasoning_tokens: 0,
-        cost: 0
+        cost: undefined
     };
 
     logger.logStep({
@@ -163,9 +167,16 @@ Output:\n${stdoutBuffer.trim()}
 
         // Track usage globally
         trackUsage(usage);
-        const totalCost = getTotalUsage().cost;
-        if (totalCost > MAX_MONEY_SPENT) {
-            throw new Error(`Budget exceeded: $${totalCost.toFixed(4)} spent, limit is $${MAX_MONEY_SPENT}`);
+        const totalUsage = getTotalUsage();
+        if (totalUsage.cost != null && totalUsage.cost > MAX_MONEY_SPENT) {
+            throw new Error(`Budget exceeded: $${totalUsage.cost.toFixed(4)} spent, limit is $${MAX_MONEY_SPENT}`);
+        }
+
+        if (totalUsage.completion_tokens > MAX_COMPLETION_TOKENS) {
+            throw new Error(`Completion token budget exceeded: ${totalUsage.completion_tokens.toLocaleString()} tokens used, limit is ${MAX_COMPLETION_TOKENS.toLocaleString()}`);
+        }
+        if (totalUsage.prompt_tokens > MAX_PROMPT_TOKENS) {
+            throw new Error(`Prompt token budget exceeded: ${totalUsage.prompt_tokens.toLocaleString()} tokens used, limit is ${MAX_PROMPT_TOKENS.toLocaleString()}`);
         }
 
         llmSpinner.success("Code generated");

@@ -10,16 +10,18 @@ let globalUsage: Usage = {
     total_tokens: 0,
     cached_tokens: 0,
     reasoning_tokens: 0,
-    cost: 0,
+    cost: undefined,
 };
 
 export function trackUsage(usage: Usage): void {
-    globalUsage.prompt_tokens += usage.prompt_tokens;
-    globalUsage.completion_tokens += usage.completion_tokens;
-    globalUsage.total_tokens += usage.total_tokens;
-    globalUsage.cached_tokens += usage.cached_tokens;
-    globalUsage.reasoning_tokens += usage.reasoning_tokens;
-    globalUsage.cost += usage.cost;
+    globalUsage.prompt_tokens += usage.prompt_tokens || 0;
+    globalUsage.completion_tokens += usage.completion_tokens || 0;
+    globalUsage.total_tokens += usage.total_tokens || 0;
+    globalUsage.cached_tokens += usage.cached_tokens || 0;
+    globalUsage.reasoning_tokens += usage.reasoning_tokens || 0;
+    if (usage.cost != null) {
+        globalUsage.cost = (globalUsage.cost ?? 0) + usage.cost;
+    }
 }
 
 export function getTotalUsage(): Usage {
@@ -33,6 +35,6 @@ export function resetUsage(): void {
         total_tokens: 0,
         cached_tokens: 0,
         reasoning_tokens: 0,
-        cost: 0,
+        cost: undefined,
     };
 }

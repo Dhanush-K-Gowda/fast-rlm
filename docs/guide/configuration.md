@@ -20,6 +20,8 @@ config = RLMConfig.default()
 | `max_calls_per_subagent` | `int` | `20` | Max LLM calls a single subagent can make |
 | `truncate_len` | `int` | `2000` | Output characters shown to the LLM per step |
 | `max_money_spent` | `float` | `1.0` | Hard budget cap in USD — raises an error if exceeded |
+| `max_completion_tokens` | `int` | `50000` | Max total completion tokens across all subagents — raises an error if exceeded |
+| `max_prompt_tokens` | `int` | `200000` | Max total prompt tokens across all subagents — raises an error if exceeded |
 
 ### Modifying config
 
@@ -27,9 +29,11 @@ config = RLMConfig.default()
 
 ```python
 config = RLMConfig.default()
-config.primary_agent = "openai/gpt-5.2-codex"
+config.primary_agent = "openai/gpt-5.2"
 config.max_depth = 5
 config.max_money_spent = 3.0
+config.max_completion_tokens = 100000
+config.max_prompt_tokens = 500000
 ```
 
 ### Using a dict
@@ -46,6 +50,9 @@ result = run(
 ```
 
 Dict values are merged on top of the defaults from `rlm_config.yaml`.
+
+!!! note "Cost tracking depends on your provider"
+    Not all API providers return cost information in their responses. OpenRouter includes cost data, but OpenAI and most other providers do not. If your provider doesn't return cost, `max_money_spent` won't be able to enforce a budget and cost will show as "Unknown" in the UI. In that case, use `max_completion_tokens` and `max_prompt_tokens` to control spending instead — these work with any provider since token counts are always returned.
 
 ## How config merging works
 

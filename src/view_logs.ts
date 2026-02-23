@@ -111,7 +111,7 @@ function printTree(node: RunNode, prefix = "", isLast = true) {
         console.log(
             newPrefix +
                 chalk.magenta(
-                    `Total: ${totalUsage.total_tokens.toLocaleString()} tokens, $${totalUsage.cost.toFixed(6)}`
+                    `Total: ${totalUsage.total_tokens.toLocaleString()} tokens, ${totalUsage.cost != null ? "$" + totalUsage.cost.toFixed(6) : "Unknown"}`
                 )
         );
     }
@@ -148,7 +148,7 @@ function printStats(entries: LogEntry[], nodes: Map<string, RunNode>) {
     }
 
     console.log(chalk.magenta(`Total tokens: ${totalTokens.toLocaleString()}`));
-    console.log(chalk.green(`Total cost: $${totalCost.toFixed(6)}`));
+    console.log(chalk.green(`Total cost: ${totalCost > 0 ? "$" + totalCost.toFixed(6) : "Unknown"}`));
 }
 
 function printLinear(entries: LogEntry[]) {
@@ -176,7 +176,7 @@ function printLinear(entries: LogEntry[]) {
             if (entry.usage) {
                 console.log(
                     chalk.cyan(
-                        `  ${entry.usage.total_tokens} tokens, $${entry.usage.cost.toFixed(6)}`
+                        `  ${entry.usage.total_tokens} tokens, ${entry.usage.cost != null ? "$" + entry.usage.cost.toFixed(6) : "Unknown"}`
                     )
                 );
             }

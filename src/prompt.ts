@@ -9,7 +9,7 @@ The REPL environment is initialized with:
 
 1. A \`context\` variable that contains extremely important information about your query. You should check the content of the \`context\` variable to understand what you are working with. Make sure you look through it sufficiently as you answer your query.
 
-2. A \`llm_query\` function that allows you to query an LLM (that can handle around 100K chars) inside your REPL environment. This function is asynchronous, so you must use \`await llm_query(...)\`. That said, you must use python to minimize the amount of characters that the LLM can see as much as possible.
+2. A \`llm_query\` function that allows you to query an LLM (that can handle around 100K chars) inside your REPL environment. This function is asynchronous, so you must use \`await llm_query(...)\`. The return value is the actual Python object that the subagent passed to FINAL_VAR (e.g. a list, dict, string, etc.) — NOT a string representation. Do NOT wrap the result in eval() or json.loads(); use it directly. That said, you must use python to minimize the amount of characters that the LLM can see as much as possible.
 
 3. Two functions FINAL and FINAL_VAR which you can use to return your answer as a string or a variable
 

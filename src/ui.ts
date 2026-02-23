@@ -88,25 +88,41 @@ export function printStep(data: StepData): void {
 
     // Usage panel
     if (usage) {
-        const usageParts = [
-            `${chalk.cyan(usage.prompt_tokens.toLocaleString())} prompt`,
-            `${chalk.cyan(usage.completion_tokens.toLocaleString())} completion`,
-            `${chalk.cyan(usage.total_tokens.toLocaleString())} total`,
+        const fmt = (v: number | undefined | null, color: typeof chalk.cyan) =>
+            v != null ? color(v.toLocaleString()) : color("Unknown");
+        const fmtCost = (v: number | undefined | null) =>
+            v != null ? chalk.green("$" + v.toFixed(6)) : chalk.green("Unknown");
+
+        // Step line
+        const stepParts = [
+            `${fmt(usage.prompt_tokens, chalk.cyan)} prompt`,
+            `${fmt(usage.completion_tokens, chalk.cyan)} completion`,
         ];
-
         if (usage.cached_tokens > 0) {
-            usageParts.push(`${chalk.yellow(usage.cached_tokens.toLocaleString())} cached`);
+            stepParts.push(`${fmt(usage.cached_tokens, chalk.yellow)} cached`);
         }
-
         if (usage.reasoning_tokens > 0) {
-            usageParts.push(`${chalk.magenta(usage.reasoning_tokens.toLocaleString())} reasoning`);
+            stepParts.push(`${fmt(usage.reasoning_tokens, chalk.magenta)} reasoning`);
+        }
+        const stepLine = `${chalk.bold("Step:")}  ${stepParts.join(", ")} | Cost: ${fmtCost(usage.cost)}`;
+
+        // Total line
+        let totalLine = "";
+        if (totalUsage) {
+            const totalParts = [
+                `${fmt(totalUsage.prompt_tokens, chalk.cyan)} prompt`,
+                `${fmt(totalUsage.completion_tokens, chalk.cyan)} completion`,
+            ];
+            if (totalUsage.cached_tokens > 0) {
+                totalParts.push(`${fmt(totalUsage.cached_tokens, chalk.yellow)} cached`);
+            }
+            if (totalUsage.reasoning_tokens > 0) {
+                totalParts.push(`${fmt(totalUsage.reasoning_tokens, chalk.magenta)} reasoning`);
+            }
+            totalLine = `\n${chalk.bold("Total:")} ${totalParts.join(", ")} | Cost: ${fmtCost(totalUsage.cost)}`;
         }
 
-        const stepCost = `Step: ${chalk.green("$" + usage.cost.toFixed(6))}`;
-        const totalCost = totalUsage ? ` | Total: ${chalk.bold.green("$" + totalUsage.cost.toFixed(6))}` : "";
-        const usageText = usageParts.join(", ") + ` | ${stepCost}${totalCost}`;
-
-        parts.push(boxen(usageText, {
+        parts.push(boxen(stepLine + totalLine, {
             title: "Usage",
             titleAlignment: "left",
             borderColor: "cyan",
@@ -148,21 +164,25 @@ export function startSpinner(text: string) {
 }
 
 export function showGlobalUsage(totalUsage: Usage): void {
+    const fmt = (v: number | undefined | null, color: typeof chalk.cyan) =>
+        v != null ? color(v.toLocaleString()) : color("Unknown");
+    const fmtCost = (v: number | undefined | null) =>
+        v != null ? chalk.green("$" + v.toFixed(6)) : chalk.green("Unknown");
+
     const usageParts = [
-        `${chalk.cyan(totalUsage.prompt_tokens.toLocaleString())} prompt`,
-        `${chalk.cyan(totalUsage.completion_tokens.toLocaleString())} completion`,
-        `${chalk.cyan(totalUsage.total_tokens.toLocaleString())} total`,
+        `${fmt(totalUsage.prompt_tokens, chalk.cyan)} prompt`,
+        `${fmt(totalUsage.completion_tokens, chalk.cyan)} completion`,
     ];
 
     if (totalUsage.cached_tokens > 0) {
-        usageParts.push(`${chalk.yellow(totalUsage.cached_tokens.toLocaleString())} cached`);
+        usageParts.push(`${fmt(totalUsage.cached_tokens, chalk.yellow)} cached`);
     }
 
     if (totalUsage.reasoning_tokens > 0) {
-        usageParts.push(`${chalk.magenta(totalUsage.reasoning_tokens.toLocaleString())} reasoning`);
+        usageParts.push(`${fmt(totalUsage.reasoning_tokens, chalk.magenta)} reasoning`);
     }
 
-    const usageText = usageParts.join(", ") + ` | ${chalk.green("$" + totalUsage.cost.toFixed(6))}`;
+    const usageText = usageParts.join(", ") + ` | Cost: ${fmtCost(totalUsage.cost)}`;
 
     const banner = boxen(usageText, {
         title: "📊 Global Usage (All Runs)",
