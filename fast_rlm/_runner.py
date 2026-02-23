@@ -29,7 +29,9 @@ class RLMConfig:
             config_path = engine_dir / "rlm_config.yaml"
             with open(config_path) as f:
                 data = yaml.safe_load(f) or {}
-            return cls(**{k: v for k, v in data.items() if k in cls.__dataclass_fields__})
+            return cls(
+                **{k: v for k, v in data.items() if k in cls.__dataclass_fields__}
+            )
         except Exception:
             return cls()
 
@@ -55,7 +57,9 @@ def _check_deno():
     if shutil.which("deno") is None:
         raise RuntimeError(
             "Deno is required but not found on PATH.\n"
-            "Install it with: curl -fsSL https://deno.land/install.sh | sh"
+            "Install it on (Mac/Linux): curl -fsSL https://deno.land/install.sh | sh"
+            "Install it on (Windows): npm install -g deno"
+            "Visit: https://docs.deno.com/runtime/getting_started/installation/ for more installation options"
         )
 
 
@@ -82,11 +86,16 @@ def run(
     output_file = tempfile.mktemp(suffix=".json")
 
     cmd = [
-        "deno", "run",
-        "--allow-read", "--allow-env", "--allow-net",
-        "--allow-sys=hostname", "--allow-write",
+        "deno",
+        "run",
+        "--allow-read",
+        "--allow-env",
+        "--allow-net",
+        "--allow-sys=hostname",
+        "--allow-write",
         "src/subagents.ts",
-        "--output", output_file,
+        "--output",
+        output_file,
     ]
 
     if prefix:

@@ -1,8 +1,8 @@
 {
   "tasks": {
-    "subagent": "FORCE_COLOR=1 deno run --allow-read --allow-env --allow-net --allow-sys=hostname --allow-write src/subagents.ts",
-    "test_counting_r": "FORCE_COLOR=1 deno run --allow-read --allow-env --allow-net --allow-sys=hostname --allow-write test_counting_r.ts",
-    "view_logs": "deno run --allow-read --allow-env --allow-net --allow-sys=hostname --allow-write src/view_logs.ts"
+    "subagent": "FORCE_COLOR=1 deno run --allow-read --allow-env --allow-net --allow-sys=hostname,osRelease --allow-write src/subagents.ts",
+    "test_counting_r": "FORCE_COLOR=1 deno run --allow-read --allow-env --allow-net --allow-sys=hostname,osRelease --allow-write test_counting_r.ts",
+    "view_logs": "deno run --allow-read --allow-env --allow-net --allow-sys=hostname,osRelease --allow-write src/view_logs.ts"
 
 
   },
