@@ -1,30 +1,13 @@
-import { OpenAI, APIConnectionError, RateLimitError, APIError } from "openai";
+import { OpenAI } from "openai";
 import chalk from "npm:chalk@5";
 import { SYSTEM_PROMPT, LEAF_AGENT_SYSTEM_PROMPT } from "./prompt.ts";
 
 const DEFAULT_MAX_RETRIES = 3;
-const DEFAULT_INITIAL_DELAY_MS = 1000;
 const DEFAULT_TIMEOUT_MS = 30000;
 
 export interface ApiRetryOptions {
     maxRetries?: number;
-    initialDelayMs?: number;
-    timeoutMs?: number;
-}
-
-function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function isRetriableError(error: unknown): boolean {
-    if (error instanceof RateLimitError) return true;
-    if (error instanceof APIConnectionError) return true;
-    if (error instanceof APIError) {
-        const status = error.status;
-        return status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
-    }
-    if (error instanceof TypeError) return true;
-    return false;
+    timeout?: number;
 }
 
 export interface Usage {
@@ -60,79 +43,58 @@ export async function generate_code(
     options?: ApiRetryOptions
 ): Promise<CodeReturn> {
     const maxRetries = options?.maxRetries ?? DEFAULT_MAX_RETRIES;
-    const initialDelayMs = options?.initialDelayMs ?? DEFAULT_INITIAL_DELAY_MS;
-    const timeoutMs = options?.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    const timeout = options?.timeout ?? DEFAULT_TIMEOUT_MS;
 
     const client = new OpenAI({
         apiKey,
         baseURL,
+        maxRetries,
+        timeout,
     });
 
-    let lastError: unknown;
-    let delay = initialDelayMs;
+    try {
+        const completion = await client.chat.completions.create({
+            model: model_name,
+            messages: [
+                { role: "system", content: is_leaf_agent ? LEAF_AGENT_SYSTEM_PROMPT : SYSTEM_PROMPT },
+                ...messages
+            ],
+        });
 
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        const content = completion.choices[0].message.content || "";
 
-            const completion = await client.chat.completions.create({
-                model: model_name,
-                messages: [
-                    { role: "system", content: is_leaf_agent ? LEAF_AGENT_SYSTEM_PROMPT : SYSTEM_PROMPT },
-                    ...messages
-                ],
-            }, {
-                signal: controller.signal,
-            });
+        const replMatches = [...content.matchAll(/```repl([\s\S]*?)```/g)];
+        let code = replMatches.map(m => m[1].trim()).join("\n");
 
-            clearTimeout(timeoutId);
+        const usage: Usage = {
+            prompt_tokens: completion.usage?.prompt_tokens ?? 0,
+            completion_tokens: completion.usage?.completion_tokens ?? 0,
+            total_tokens: completion.usage?.total_tokens ?? 0,
+            cached_tokens: completion.usage?.prompt_tokens_details?.cached_tokens ?? 0,
+            reasoning_tokens: completion.usage?.completion_tokens_details?.reasoning_tokens ?? 0,
+            cost: (completion.usage as any)?.cost ?? undefined,
+        };
 
-            const content = completion.choices[0].message.content || "";
-
-            const replMatches = [...content.matchAll(/```repl([\s\S]*?)```/g)];
-            let code = replMatches.map(m => m[1].trim()).join("\n");
-
-            const usage: Usage = {
-                prompt_tokens: completion.usage?.prompt_tokens ?? 0,
-                completion_tokens: completion.usage?.completion_tokens ?? 0,
-                total_tokens: completion.usage?.total_tokens ?? 0,
-                cached_tokens: completion.usage?.prompt_tokens_details?.cached_tokens ?? 0,
-                reasoning_tokens: completion.usage?.completion_tokens_details?.reasoning_tokens ?? 0,
-                cost: (completion.usage as any)?.cost ?? undefined,
-            };
-
-            if (!code) {
-                return {
-                    code: "",
-                    success: false,
-                    message: completion.choices[0].message,
-                    usage,
-                };
-            }
-
+        if (!code) {
             return {
-                code,
-                success: true,
+                code: "",
+                success: false,
                 message: completion.choices[0].message,
                 usage,
             };
-        } catch (error) {
-            lastError = error;
-            if (attempt < maxRetries - 1 && isRetriableError(error)) {
-                const msg = error instanceof Error ? error.message : String(error);
-                console.error(chalk.yellow(`⚠ API error (attempt ${attempt + 1}/${maxRetries}): ${msg}`));
-                console.error(chalk.dim(`   Retrying in ${delay}ms...`));
-                await sleep(delay);
-                delay *= 2;
-                continue;
-            }
-            break;
         }
-    }
 
-    const msg = lastError instanceof Error ? lastError.message : String(lastError);
-    throw new Error(chalk.red(`✖ API call failed after ${maxRetries} retries: ${msg}`));
+        return {
+            code,
+            success: true,
+            message: completion.choices[0].message,
+            usage,
+        };
+    } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        console.error(chalk.red(`✖ API call failed: ${msg}`));
+        throw error;
+    }
 }
 
 if (import.meta.main) {

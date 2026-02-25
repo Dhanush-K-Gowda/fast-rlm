@@ -6,5 +6,4 @@ sub_agent: "minimax/minimax-m2.5"
 max_money_spent: 1.0
 # API retry / timeout
 api_max_retries: 3
-api_initial_delay_ms: 1000
 api_timeout_ms: 30000

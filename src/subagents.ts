@@ -16,7 +16,6 @@ interface RlmConfig {
     max_completion_tokens?: number;
     max_prompt_tokens?: number;
     api_max_retries?: number;
-    api_initial_delay_ms?: number;
     api_timeout_ms?: number;
 }
 
@@ -43,7 +42,6 @@ const MAX_MONEY_SPENT = _config.max_money_spent ?? Infinity;
 const MAX_COMPLETION_TOKENS = _config.max_completion_tokens ?? 50000;
 const MAX_PROMPT_TOKENS = _config.max_prompt_tokens ?? 200000;
 const API_MAX_RETRIES = _config.api_max_retries ?? 3;
-const API_INITIAL_DELAY_MS = _config.api_initial_delay_ms ?? 1000;
 const API_TIMEOUT_MS = _config.api_timeout_ms ?? 30000;
 
 function truncateText(text: string): string {
@@ -172,8 +170,7 @@ Output:\n${stdoutBuffer.trim()}
         const llmSpinner = startSpinner("Generating code...");
         const { code, success, message, usage } = await generate_code(messages, model_name, is_leaf_agent, {
             maxRetries: API_MAX_RETRIES,
-            initialDelayMs: API_INITIAL_DELAY_MS,
-            timeoutMs: API_TIMEOUT_MS,
+            timeout: API_TIMEOUT_MS,
         });
         const llmCallEnd = now();
         messages.push(message);
